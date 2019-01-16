@@ -1,0 +1,42 @@
+﻿<Page
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Client.Pages"
+      xmlns:Custom="http://schemas.microsoft.com/winfx/2006/xaml/presentation/ribbon" 
+      x:Class="Client.Pages.PageLobby"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="大廳">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <Custom:Ribbon Grid.Row="0">
+            <Custom:Ribbon.ApplicationMenu>
+                <Custom:RibbonApplicationMenu Visibility="Collapsed" />
+            </Custom:Ribbon.ApplicationMenu>
+
+            <Custom:RibbonTab Header="操作面板">
+                <Custom:RibbonGroup Header="好友">
+                    <Custom:RibbonButton Label="新增"
+                        LargeImageSource="/Client;component/Resources/Images/add-friend.png" 
+                        SmallImageSource="/Client;component/Resources/Images/add-friend.png"/>
+                </Custom:RibbonGroup>
+                <Custom:RibbonGroup Header="其他">
+                    <Custom:RibbonButton Label="登出"
+                        LargeImageSource="/Client;component/Resources/Images/logout.png" 
+                        SmallImageSource="/Client;component/Resources/Images/logout.png"/>
+                </Custom:RibbonGroup>
+            </Custom:RibbonTab>
+        </Custom:Ribbon>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel  Name="pnlFriends" />
+        </ScrollViewer>
+    </Grid>
+</Page>
