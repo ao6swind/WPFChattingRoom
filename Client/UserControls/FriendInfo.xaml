@@ -13,7 +13,7 @@
             </Grid.ColumnDefinitions>
             <Image Grid.Column="0" Height="100" Name="imgUser"/>
             <StackPanel Grid.Column="1">
-                <Label Content="[USERNAME]" Height="100" VerticalContentAlignment="Center" Margin="10,0,0,0"/>
+                <Label Name="txtFriendName" Content="[USERNAME]" Height="100" VerticalContentAlignment="Center" Margin="10,0,0,0"/>
             </StackPanel>
         </Grid>
     </Border>

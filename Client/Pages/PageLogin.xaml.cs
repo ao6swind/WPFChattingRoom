@@ -45,7 +45,7 @@ namespace Client.Pages
                 }
                 else
                 {
-                    ((Frame)Application.Current.MainWindow.FindName("pnlFrame")).Navigate(new PageLobby());
+                    ((MainWindow)Application.Current.MainWindow).Connection(user);
                 }
             }
             else

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -16,9 +18,6 @@ using System.Windows.Threading;
 using Models;
 namespace Server
 {
-    /// <summary>
-    /// MainWindow.xaml 的互動邏輯
-    /// </summary>
     public partial class MainWindow : Window
     {
         #region [欄位]
@@ -45,6 +44,9 @@ namespace Server
             txtIpAddress.Content    = SocketSetting.IP;
             txtPort.Content         = SocketSetting.Port;
             txtNumber.Content       = SocketSetting.Number;
+
+            // 啟動伺服器
+            TurnOnServer();
         }
         #endregion
 
@@ -55,9 +57,7 @@ namespace Server
         #region [按鈕][左鍵][啟動伺服器]
         private void BtnTurnOn_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            _server.Start();
-            btnTurnOn.IsEnabled = false;
-            btnTurnOff.IsEnabled = true;
+            TurnOnServer();
         }
         #endregion
 
@@ -67,6 +67,20 @@ namespace Server
             _server.Stop();
             btnTurnOn.IsEnabled = true;
             btnTurnOff.IsEnabled = false;
+        }
+        #endregion
+
+
+        // ===============================================
+        // 自定義副函式
+        // ===============================================
+
+        #region [副函式][啟動伺服器]
+        private void TurnOnServer()
+        {
+            _server.Start();
+            btnTurnOn.IsEnabled = false;
+            btnTurnOff.IsEnabled = true;
         }
         #endregion
 
@@ -129,10 +143,15 @@ namespace Server
         #endregion
 
         #region [SocketServer][接受連線][成功]
-        private void _server_OnSocketServerAcceptSuccess(SocketServer server, SocketClient client)
+        private void _server_OnSocketServerAcceptSuccess(SocketServer server, SocketClient accepted)
         {
             Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => {
                 txtOnlineCounting.Content = server.OnlineMember;
+                pnlMessage.Children.Add(new TextBlock()
+                {
+                    Text = String.Format("{0} # 使用者連入 {1}", DateTime.Now.ToString(), accepted.IpAddress)
+                });
+                
             }));
         }
         #endregion

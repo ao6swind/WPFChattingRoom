@@ -1,5 +1,6 @@
 ﻿using Client.UserControls;
 using Models;
+using Models.DbContexts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,27 +23,49 @@ namespace Client.Pages
     /// </summary>
     public partial class PageLobby : Page
     {
-        public PageLobby()
+        private ChattingRoomEntities db = new ChattingRoomEntities();
+        private User user;
+        public PageLobby(User _user)
         {
             InitializeComponent();
+            user = _user;
+            ShowFriends(user);
+        }
 
-            List<User> friends = new List<User>();
-
-            for (int i = 0; i <= 5; i++)
-            {
-                friends.Add(new User()
-                {
-                    Id = i + 1,
-                    Name = "使用者" + i.ToString(),
-                    Account = "Account" + i.ToString(),
-                    Password = "Password" + i.ToString()
-                });
-            }
+        private void ShowFriends(User user)
+        {
+            pnlFriends.Children.Clear();
+            List<Friend> friends = db.Friends.Where(x => x.UserId == user.Id).ToList();
             int number = 0;
-            foreach(User friend in friends)
+            foreach (Friend friend in friends)
             {
-                number++;
-                pnlFriends.Children.Add(new FriendInfo(friend, ((number % 8) + 1)));
+                User myFriend = db.Users.Where(x => x.Id == friend.FriendId).First();
+                pnlFriends.Children.Add(new FriendInfo(myFriend, ((number % 8) + 1)));
+            }
+        }
+
+        private void BtnLogout_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            List<ChattingRoomSingle> windows = Application.Current.Windows.OfType<ChattingRoomSingle>().ToList();
+            foreach (ChattingRoomSingle window in windows)
+            {
+                window.Close();
+            }
+            ((MainWindow)Application.Current.MainWindow).Disconnection();
+        }
+
+        private void BtnAddFriend_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (db.Users.Any(x => x.Account == txtFriendAccount.Text))
+            {
+                User friend = db.Users.Where(x => x.Account == txtFriendAccount.Text).First();
+                db.Friends.Add(new Friend()
+                {
+                    UserId = user.Id,
+                    FriendId = friend.Id
+                });
+                db.SaveChanges();
+                ShowFriends(user);
             }
         }
     }

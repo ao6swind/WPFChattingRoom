@@ -27,13 +27,25 @@ namespace Client.UserControls
         {
             InitializeComponent();
             _friend = friend;
+            txtFriendName.Content = friend.Name;
             imgUser.Source = new BitmapImage(new Uri(@"../Resources/Images/Users/"+image.ToString()+".png", UriKind.Relative));
         }
 
         private void Grid_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            ChattingRoomSingle room = new ChattingRoomSingle(_friend);
-            room.Show();
+            if (Application.Current.Windows.OfType<ChattingRoomSingle>().Any(x => x.FriendAccount == _friend.Account))
+            {
+                Application.Current.Windows
+                    .OfType<ChattingRoomSingle>()
+                    .Where(x => x.FriendAccount == _friend.Account)
+                    .First()
+                    .Focus();
+            }
+            else
+            {
+                ChattingRoomSingle room = new ChattingRoomSingle(_friend);
+                room.Show();
+            }
         }
     }
 }

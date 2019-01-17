@@ -1,23 +1,19 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Models
 {
-    public class SocketServer : INotifyPropertyChanged
+    public class SocketServer
     {
-        // 事件
+        #region [事件]
         public delegate void SocketServerInitSuccessHandler(SocketServer server);
         public delegate void SocketServerInitFailedHandler(SocketServer server, Exception ex);
         public delegate void SocketServerCloseSuccessHandler(SocketServer server);
         public delegate void SocketServerCloseFailedHandler(SocketServer server, Exception ex);
-        public delegate void SocketServerAcceptSuccessHandler(SocketServer server, SocketClient client);
+        public delegate void SocketServerAcceptSuccessHandler(SocketServer server, SocketClient accept);
         public delegate void SocketServerAcceptFailedHandler(SocketServer server, Exception ex);
         public delegate void SocketServerReciveSuccessHandler(SocketServer server, byte[] data);
         public delegate void SocketServerReciveFailedHandler(SocketServer server, Exception ex);
@@ -31,21 +27,30 @@ namespace Models
         public event SocketServerReciveSuccessHandler OnSocketServerReciveSuccess;
         public event SocketServerReciveFailedHandler OnSocketServerReciveFailed;
         public event PropertyChangedEventHandler PropertyChanged;
+        #endregion
 
-        // 欄位
+        #region [欄位]
         private Socket _server;
         private List<SocketClient> _clients = new List<SocketClient>();
+        #endregion
 
-        // 屬性
+        #region [屬性]
         public bool IsListening { get; private set; }   // 伺服器狀態
-        public int OnlineMember { get; private set; }   // 在線人數
+        public int OnlineMember { get { return _clients.Count; } }   // 在線人數
+        #endregion
 
-        // 建構式
+        #region [建構式]
         public SocketServer()
         {
             IsListening = false;
         }
+        #endregion
 
+        // ===============================================
+        // 方法
+        // ===============================================
+
+        #region [方法][啟動伺服器]
         public void Start()
         {
             if (!IsListening)
@@ -71,7 +76,9 @@ namespace Models
                 }
             }
         }
+        #endregion
 
+        #region [方法][停止伺服器]
         public void Stop()
         {
             if (IsListening)
@@ -95,23 +102,31 @@ namespace Models
                 }
             }
         }
+        #endregion
 
+        #region [方法][傳遞資料至指定使用者]
+        public void Send(User user, string data)
+        {
+            
+        }
+        #endregion
+
+        // ===============================================
+        // callback處理函式
+        // ===============================================
+
+        #region [callback][接收連線]
         private void _accept_callback(IAsyncResult AR)
         {
             try
             {
-                byte[] data;
-                Socket client = _server.EndAccept(out data, AR);
-
                 SocketClient accepted = new SocketClient()
                 {
-                    User = JsonConvert.DeserializeObject<User>(Encoding.Default.GetString(data))
+                    Client = _server.EndAccept(AR)
                 };
-
                 accepted.OnSocketClientReceivedSuccess += Accepted_OnSocketClientReceivedSuccess;
                 accepted.OnSocketClientReceivedFailed += Accepted_OnSocketClientReceivedFailed;
-
-                this._clients.Add(accepted);
+                _clients.Add(accepted);
                 _server.BeginAccept(_accept_callback, null);
                 if (OnSocketServerAcceptSuccess != null)
                 {
@@ -126,21 +141,32 @@ namespace Models
                 }
             }
         }
+        #endregion
 
+        // ===============================================
+        // 自定義事件處理函式
+        // ===============================================
+
+        #region [事件][接收到Client傳來的資料成功時]
         private void Accepted_OnSocketClientReceivedSuccess(SocketClient sender, byte[] data)
         {
+            // 不管三七二十一直接丟出去給server的主視窗
             if (OnSocketServerReciveSuccess != null)
             {
                 OnSocketServerReciveSuccess(this, data);
             }
         }
+        #endregion
 
+        #region [事件][接收到Client傳來的資料失敗時]
         private void Accepted_OnSocketClientReceivedFailed(SocketClient sender, Exception ex)
         {
+            // 不管三七二十一直接丟出去給server的主視窗
             if (OnSocketServerReciveFailed != null)
             {
                 OnSocketServerReciveFailed(this, ex);
             }
         }
+        #endregion
     }
 }

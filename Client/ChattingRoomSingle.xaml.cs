@@ -15,34 +15,34 @@ using System.Windows.Shapes;
 
 namespace Client
 {
-    /// <summary>
-    /// ChattingRoomSingle.xaml 的互動邏輯
-    /// </summary>
     public partial class ChattingRoomSingle : Window
     {
+        public string FriendAccount { get; private set; }
         private User _friend;
 
         public ChattingRoomSingle(User friend)
         {
             InitializeComponent();
+            FriendAccount = friend.Account;
+            Title = friend.Name;
             _friend = friend;
-            this.Title = _friend.Name;
         }
 
         private void Button_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            Border border = new Border();
-            border.CornerRadius = new CornerRadius(5);
-            border.Padding = new Thickness(10);
-            border.Background = Brushes.Red;
+            if (txtMessage.Text != String.Empty)
+            {
+                TextBlock txt = new TextBlock();
+                txt.Text = txtMessage.Text;
+                txt.Padding = new Thickness(10);
+                txt.Margin = new Thickness(10);
+                txt.Background = Brushes.Purple;
+                txt.Foreground = Brushes.White;
+                txt.HorizontalAlignment = HorizontalAlignment.Right;
 
-            TextBlock txt = new TextBlock();
-            txt.Text = txtMessage.Text;
-            
-            txt.HorizontalAlignment = HorizontalAlignment.Right;
-            
-            pnlHistory.Children.Add(border);
-            txtMessage.Text = string.Empty;
+                pnlHistory.Children.Add(txt);
+                txtMessage.Text = String.Empty;
+            }
         }
     }
 }

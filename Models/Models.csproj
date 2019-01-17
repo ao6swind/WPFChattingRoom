@@ -63,6 +63,7 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SocketClient.cs" />
+    <Compile Include="SocketPackage.cs" />
     <Compile Include="SocketServer.cs" />
     <Compile Include="SocketSetting.cs" />
     <Compile Include="User.cs" />
