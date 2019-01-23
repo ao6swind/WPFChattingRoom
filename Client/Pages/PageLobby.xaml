@@ -8,7 +8,7 @@
       x:Class="Client.Pages.PageLobby"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="大廳">
+      Title="Lobby">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -21,17 +21,17 @@
                 <Custom:RibbonApplicationMenu Visibility="Collapsed" />
             </Custom:Ribbon.ApplicationMenu>
 
-            <Custom:RibbonTab Header="操作面板">
-                <Custom:RibbonGroup Header="好友">
-                    <Label Content="請輸入好友帳號" />
+            <Custom:RibbonTab Header="Function">
+                <Custom:RibbonGroup Header="Friend">
+                    <Label Content="Enter your friend's account" />
                     <Custom:RibbonTextBox Name="txtFriendAccount"/>
-                    <Custom:RibbonButton Label="新增" Name="btnAddFriend"
+                    <Custom:RibbonButton Label="Add" Name="btnAddFriend"
                         LargeImageSource="/Client;component/Resources/Images/add-friend.png" 
                         SmallImageSource="/Client;component/Resources/Images/add-friend.png"
                         PreviewMouseLeftButtonUp="BtnAddFriend_PreviewMouseLeftButtonUp"/>
                 </Custom:RibbonGroup>
-                <Custom:RibbonGroup Header="其他">
-                    <Custom:RibbonButton Label="登出" Name="btnLogout"
+                <Custom:RibbonGroup Header="Function">
+                    <Custom:RibbonButton Label="Logout" Name="btnLogout"
                         LargeImageSource="/Client;component/Resources/Images/logout.png" 
                         SmallImageSource="/Client;component/Resources/Images/logout.png"
                         PreviewMouseLeftButtonUp="BtnLogout_PreviewMouseLeftButtonUp"/>

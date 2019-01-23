@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Models;
+using Models.DbContexts;
+using Modules.SocketModules;
+using Newtonsoft.Json;
+using System;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
-using Models;
+
 namespace Server
 {
     public partial class MainWindow : Window
@@ -29,25 +24,18 @@ namespace Server
         {
             InitializeComponent();
 
+            // 載入使用者清單
+            ChattingRoomEntities db = new ChattingRoomEntities();
+            pnlUserList.ItemsSource = db.Users.ToList();
+
             // 建立Socket Server
             _server = new SocketServer();
-            _server.OnSocketServerInitSuccess   += _server_OnSocketServerInitSuccess;   // 初始化成功
-            _server.OnSocketServerInitFailed    += _server_OnSocketServerInitFailed;    // 初始化失敗
-            _server.OnSocketServerAcceptSuccess += _server_OnSocketServerAcceptSuccess; // 連入成功
-            _server.OnSocketServerAcceptFailed  += _server_OnSocketServerAcceptFailed;  // 連入失敗
-            _server.OnSocketServerReciveSuccess += _server_OnSocketServerReciveSuccess; // 接收資料成功
-            _server.OnSocketServerReciveFailed  += _server_OnSocketServerReciveFailed;  // 接收資料失敗
-            _server.OnSocketServerCloseSuccess += _server_OnSocketServerCloseSuccess;   // 關閉成功
-            _server.OnSocketServerCloseFailed += _server_OnSocketServerCloseFailed;     // 關閉失敗
-
-            // 顯示基本設定          
-            txtIpAddress.Content    = SocketSetting.IP;
-            txtPort.Content         = SocketSetting.Port;
-            txtNumber.Content       = SocketSetting.Number;
+            _server.OnSocketServerAcceptedSuccess += _server_OnSocketServerAcceptedSuccess;
+            _server.OnSocketServerAcceptedFailed += _server_OnSocketServerAcceptedFailed;
 
             // 啟動伺服器
             TurnOnServer();
-        }
+        }       
         #endregion
 
         // ===============================================
@@ -64,12 +52,33 @@ namespace Server
         #region [按鈕][左鍵][關閉伺服器]
         private void BtnTurnOff_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            _server.Broadcast(new SocketPackage()
+            {
+                Action = SocketPackage.EnumAction.ServerShutdown
+            });
             _server.Stop();
             btnTurnOn.IsEnabled = true;
             btnTurnOff.IsEnabled = false;
+            ShowInformation();
+            ShowMessage("turn off server");
         }
         #endregion
 
+        #region [按鈕][左鍵][廣播訊息]
+        private void BtnSend_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (txtMessage.Text != String.Empty)
+            {
+                ShowMessage(String.Format("broadcast: {0}", txtMessage.Text));
+                _server.Broadcast(new SocketPackage()
+                {
+                    Action = SocketPackage.EnumAction.ServerBroadcast,
+                    Data = txtMessage.Text
+                });
+                txtMessage.Text = String.Empty;
+            }
+        }
+        #endregion
 
         // ===============================================
         // 自定義副函式
@@ -81,6 +90,33 @@ namespace Server
             _server.Start();
             btnTurnOn.IsEnabled = false;
             btnTurnOff.IsEnabled = true;
+            ShowInformation();
+            ShowMessage("turn on server");
+        }
+        #endregion
+
+        #region [副函式][更新伺服器狀態]
+        private void ShowInformation()
+        {
+            txtStatus.Content           = _server.Status;
+            txtIpAddress.Content        = _server.IpAddress;
+            txtPort.Content             = _server.Port;
+            txtAllowConnection.Content  = _server.AllowConnection;
+            txtOnlineMember.Content     = _server.OnlineMember;
+        }
+        #endregion
+
+        #region [副函式][打印訊息]
+        private void ShowMessage(string msg)
+        {
+            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
+            {
+                pnlMessage.Children.Add(new TextBlock()
+                {
+                    TextWrapping = TextWrapping.Wrap,
+                    Text = String.Format("{0} # {1}", DateTime.Now.ToString(), msg)
+                });
+            }));
         }
         #endregion
 
@@ -88,99 +124,78 @@ namespace Server
         // 自定義事件處理函式
         // ===============================================
 
-        #region [SocketServer][初始化][成功]
-        private void _server_OnSocketServerInitSuccess(SocketServer server)
+        #region [SocketServer][接受連線失敗時]
+        private void _server_OnSocketServerAcceptedFailed(SocketServer sender, Exception ex)
         {
-            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
+            ShowMessage(String.Format("has error when accept connection: {0}", ex.Message));
+        }
+        #endregion
+
+        #region [SocketServer][接受連線成功時]
+        private void _server_OnSocketServerAcceptedSuccess(SocketServer sender, Socket accept)
+        {
+            SocketConnection connection = new SocketConnection(accept);
+            connection.OnSocketConnectionReceivedSuccess += Connection_OnSocketConnectionReceivedSuccess;
+            _server.Connections.Add(connection);
+
+            ShowMessage(String.Format("{0} try to connect... ...", ((IPEndPoint)accept.RemoteEndPoint).Address.ToString()));
+            accept.Send(SocketPackage.Stream(new SocketPackage()
             {
-                pnlMessage.Children.Add(new TextBlock()
-                {
-                    Text = String.Format("{0} # 伺服器初始化成功", DateTime.Now.ToString())
-                });
+                Action = SocketPackage.EnumAction.AuthenticationRequest
             }));
         }
         #endregion
 
-        #region [SocketServer][初始化][失敗]
-        private void _server_OnSocketServerInitFailed(SocketServer server, Exception ex)
+        #region [SocketConnection][接收資料成功時]
+        private void Connection_OnSocketConnectionReceivedSuccess(SocketConnection connection, byte[] data)
         {
-            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
+            if (data.Length > 0)
             {
-                pnlMessage.Children.Add(new TextBlock()
+                SocketPackage package = SocketPackage.Unpackage(data);
+
+                Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
                 {
-                    Text = String.Format("{0} # 伺服器初始化失敗 # {1}", DateTime.Now.ToString(), ex.Message),
-                    Foreground = Brushes.Red
-                });
-            }));
-        }
-        #endregion
-
-        #region [SocketServer][關閉][成功]
-        private void _server_OnSocketServerCloseSuccess(SocketServer server)
-        {
-            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
-            {
-                pnlMessage.Children.Add(new TextBlock()
-                {
-                    Text = String.Format("{0} # 伺服器關閉成功", DateTime.Now.ToString())
-                });
-            }));
-        }
-        #endregion
-
-        #region [SocketServer][關閉][失敗]
-        private void _server_OnSocketServerCloseFailed(SocketServer server, Exception ex)
-        {
-            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
-            {
-                pnlMessage.Children.Add(new TextBlock()
-                {
-                    Text = String.Format("{0} # 伺服器關閉失敗 # {1}", DateTime.Now.ToString(), ex.Message),
-                    Foreground = Brushes.Red
-                });
-            }));
-        }
-        #endregion
-
-        #region [SocketServer][接受連線][成功]
-        private void _server_OnSocketServerAcceptSuccess(SocketServer server, SocketClient accepted)
-        {
-            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => {
-                txtOnlineCounting.Content = server.OnlineMember;
-                pnlMessage.Children.Add(new TextBlock()
-                {
-                    Text = String.Format("{0} # 使用者連入 {1}", DateTime.Now.ToString(), accepted.IpAddress)
-                });
-                
-            }));
-        }
-        #endregion
-
-        #region [SocketServer][接受連線][失敗]
-        private void _server_OnSocketServerAcceptFailed(SocketServer server, Exception ex)
-        {
-            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
-            {
-                pnlMessage.Children.Add(new TextBlock()
-                {
-                    Text = String.Format("{0} # 伺服器接收連線失敗 # {1}", DateTime.Now.ToString(), ex.Message),
-                    Foreground = Brushes.Red
-                });
-            }));
-        }
-        #endregion
-
-        #region [SocketServer][接收資料][成功]
-        private void _server_OnSocketServerReciveSuccess(SocketServer server, byte[] data)
-        {
-            throw new NotImplementedException();
-        }
-        #endregion
-
-        #region [SocketServer][接收資料][失敗]
-        private void _server_OnSocketServerReciveFailed(SocketServer server, Exception ex)
-        {
-            throw new NotImplementedException();
+                    switch (package.Action)
+                    {
+                        /// =============================
+                        /// 身分驗證成功
+                        /// =============================
+                        case SocketPackage.EnumAction.AuthenticationResponse:
+                            _server.Connections.Where(x => x == connection).First().User = JsonConvert.DeserializeObject<User>(package.Data);
+                            ShowMessage(String.Format("user {0} was signed in", JsonConvert.DeserializeObject<User>(package.Data).Account));
+                            ShowInformation();
+                            break;
+                        /// =============================
+                        /// 使用者登出
+                        /// =============================
+                        case SocketPackage.EnumAction.ClientSignout:
+                            _server.Connections.RemoveAll(x => x.User.Account == package.Data);
+                            ShowMessage(String.Format("user {0} was signed out", package.Data));
+                            ShowInformation();
+                            break;
+                        /// =============================
+                        /// 傳遞訊息
+                        /// =============================
+                        case SocketPackage.EnumAction.ClientSendMessage:
+                            Message message = JsonConvert.DeserializeObject<Message>(package.Data);
+                            SocketConnection target = _server.Connections.Where(x => x.User.Account == message.To.Account).FirstOrDefault();
+                            if (target != null)
+                            {
+                                target.Send(new SocketPackage()
+                                {
+                                    Action = SocketPackage.EnumAction.ClientReciveMessage,
+                                    Data = package.Data
+                                });
+                                ShowMessage(String.Format("user {0} → user {1} (success): {2}", message.From.Name, message.To.Name, message.Content));
+                            }
+                            else
+                            {
+                                ShowMessage(String.Format("user {0} → user {1} (failed): {2}", message.From.Name, message.To.Name, message.Content));
+                            }
+                            break;
+                    }
+                }));
+            }
         }
         #endregion
     }

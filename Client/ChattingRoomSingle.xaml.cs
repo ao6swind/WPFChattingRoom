@@ -17,21 +17,35 @@ namespace Client
 {
     public partial class ChattingRoomSingle : Window
     {
-        public string FriendAccount { get; private set; }
+        #region [欄位]
         private User _friend;
+        #endregion
 
+        #region [屬性]
+        public string FriendAccount { get { return _friend.Account; } }
+        #endregion
+
+        #region [建構式]
         public ChattingRoomSingle(User friend)
         {
             InitializeComponent();
-            FriendAccount = friend.Account;
+ 
             Title = friend.Name;
             _friend = friend;
         }
+        #endregion
 
+        // ===============================================
+        // UI事件處理函式
+        // ===============================================
+
+        #region [按鈕][左鍵][傳送訊息]
         private void Button_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (txtMessage.Text != String.Empty)
             {
+                ((MainWindow)(Application.Current.MainWindow)).Send(_friend, txtMessage.Text);
+
                 TextBlock txt = new TextBlock();
                 txt.Text = txtMessage.Text;
                 txt.Padding = new Thickness(10);
@@ -44,5 +58,6 @@ namespace Client
                 txtMessage.Text = String.Empty;
             }
         }
+        #endregion
     }
 }

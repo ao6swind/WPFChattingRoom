@@ -28,18 +28,18 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Content="名稱" />
-                <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Content="帳號" />
-                <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Content="密碼" />
+                <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Content="Name" />
+                <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Content="Account" />
+                <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Content="Password" />
                 <TextBox Grid.Row="0" Grid.Column="1" Margin="10,10,10,10" Name="txtName" />
                 <TextBox Grid.Row="1" Grid.Column="1" Margin="10,10,10,10" Name="txtAccount" />
                 <PasswordBox Grid.Row="2" Grid.Column="1" Margin="10,10,10,10" Name="txtPassword" />
-                <Button Grid.Row="3" Grid.Column="1" Margin="10,10,10,10" Content="申請" PreviewMouseLeftButtonUp="Button_PreviewMouseLeftButtonUp"/>
+                <Button Grid.Row="3" Grid.Column="1" Margin="10,10,10,10" Content="Send" PreviewMouseLeftButtonUp="Button_PreviewMouseLeftButtonUp"/>
             </Grid>
         </StackPanel>
         <StackPanel Grid.Row="2">
             <TextBlock TextAlignment="Center" Margin="10,10,10,10">
-                <Hyperlink Click="Hyperlink_Click">回登入頁面</Hyperlink>
+                <Hyperlink Click="Hyperlink_Click">Back to login page</Hyperlink>
             </TextBlock>
             <ContentControl Name="pnlContent"/>
         </StackPanel>

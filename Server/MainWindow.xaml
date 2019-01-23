@@ -6,17 +6,20 @@
         xmlns:local="clr-namespace:Server"
         mc:Ignorable="d"
         FontSize="16"
-        Title="即時通訊軟體（伺服器端）" Height="450" Width="800" Icon="Resources/Images/logo.png">
+        Title="Messager（Server Side）" Height="Auto" Width="1000" MinWidth="1000" Icon="Resources/Images/logo.png">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <GroupBox Grid.Column="0" Grid.Row="0" Margin="10,10,10,10" Header="資訊面板">
+
+        <GroupBox Grid.Column="0" Grid.Row="0" Margin="10,10,10,10" Padding="10,10,10,10" Header="Information">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -29,31 +32,56 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Label Grid.Column="0" Grid.Row="0" Content="狀態：" HorizontalAlignment="Right"/>
-                <Label Grid.Column="0" Grid.Row="1" Content="IP位置：" HorizontalAlignment="Right"/>
-                <Label Grid.Column="0" Grid.Row="2" Content="通訊埠：" HorizontalAlignment="Right"/>
-                <Label Grid.Column="0" Grid.Row="3" Content="連線數：" HorizontalAlignment="Right"/>
-                <Label Grid.Column="0" Grid.Row="4" Content="在線人數：" HorizontalAlignment="Right"/>
+                <Label Grid.Column="0" Grid.Row="0" Content="Status：" HorizontalAlignment="Right"/>
+                <Label Grid.Column="0" Grid.Row="1" Content="IP Address：" HorizontalAlignment="Right"/>
+                <Label Grid.Column="0" Grid.Row="2" Content="Port：" HorizontalAlignment="Right"/>
+                <Label Grid.Column="0" Grid.Row="3" Content="Max connection：" HorizontalAlignment="Right"/>
+                <Label Grid.Column="0" Grid.Row="4" Content="Online member：" HorizontalAlignment="Right"/>
                 <Label Grid.Column="1" Grid.Row="0" Content="[STATUS]" Name="txtStatus" />
                 <Label Grid.Column="1" Grid.Row="1" Content="[IP_ADDRESS]" Name="txtIpAddress"/>
                 <Label Grid.Column="1" Grid.Row="2" Content="[LISTEN_PORT]" Name="txtPort"/>
-                <Label Grid.Column="1" Grid.Row="3" Content="[NUMBER]" Name="txtNumber"/>
-                <Label Grid.Column="1" Grid.Row="4" Content="[ONLINE_COUNT]" Name="txtOnlineCounting"/>
+                <Label Grid.Column="1" Grid.Row="3" Content="[ALLOW_CONNECTION]" Name="txtAllowConnection"/>
+                <Label Grid.Column="1" Grid.Row="4" Content="[ONLINE_MEMBER]" Name="txtOnlineMember"/>
             </Grid>
         </GroupBox>
-        <GroupBox Grid.Column="0" Grid.Row="1" Margin="10,10,10,10" Header="功能面板">
+
+        <GroupBox Grid.Column="0" Grid.Row="1" Margin="10,10,10,10" Padding="10,10,10,10" Header="Function">
             <Grid>
                 <StackPanel>
-                    <Button Margin="10,10,10,10" Content="啟動" Name="btnTurnOn" IsEnabled="True" PreviewMouseLeftButtonUp="BtnTurnOn_PreviewMouseLeftButtonUp"/>
-                    <Button Margin="10,10,10,10" Content="關閉" Name="btnTurnOff" IsEnabled="False" PreviewMouseLeftButtonUp="BtnTurnOff_PreviewMouseLeftButtonUp"/>
+                    <Button Margin="10,10,10,10" Content="Turn On" Name="btnTurnOn" IsEnabled="True" PreviewMouseLeftButtonUp="BtnTurnOn_PreviewMouseLeftButtonUp"/>
+                    <Button Margin="10,10,10,10" Content="Turn Off" Name="btnTurnOff" IsEnabled="False" PreviewMouseLeftButtonUp="BtnTurnOff_PreviewMouseLeftButtonUp"/>
                 </StackPanel>
             </Grid>
         </GroupBox>
-        <GroupBox Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Margin="10,10,10,10" Header="訊息面板">
+
+        <GroupBox Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Margin="10,10,10,10" Padding="10,10,10,10" Header="Log">
             <Grid>
                 <ScrollViewer>
                     <StackPanel Margin="10,10,10,10" Name="pnlMessage"/>
                 </ScrollViewer>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Margin="10,10,10,10" Padding="10,10,10,10" Header="Users">
+            <Grid>
+                <DataGrid IsReadOnly="True" AutoGenerateColumns="False" Name="pnlUserList">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Id" Binding="{ Binding Id }"/>
+                        <DataGridTextColumn Header="Name" Binding="{ Binding Name }"/>
+                        <DataGridTextColumn Header="Account" Binding="{ Binding Account }"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" Margin="10,10,10,10" Padding="10,10,10,10" Header="Broadcast">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" Name="txtMessage"/>
+                <Button Grid.Column="1" Name="btnSend" Content="Send" PreviewMouseLeftButtonUp="BtnSend_PreviewMouseLeftButtonUp"/>
             </Grid>
         </GroupBox>
     </Grid>

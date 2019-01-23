@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Text;
 
-namespace Models
+namespace Modules.SocketModules
 {
-    // 設一個類別是讓ChattingRoom的Client & Server可以便利的設定欲傳遞的資料
     public class SocketPackage
     {
         #region [屬性]
@@ -14,9 +13,9 @@ namespace Models
         // ===============================================
         // 方法
         // ===============================================
-        
+
         #region [方法][把SocketPackage轉換成byte[]]
-        public static byte[] Package(SocketPackage package)
+        public static byte[] Stream(SocketPackage package)
         {
             byte[] data = null;
             if (package.Data != null && package.Data != String.Empty)
@@ -62,9 +61,12 @@ namespace Models
         public enum EnumAction
         {
             AuthenticationRequest,
-            AuthenticationResponsive,
+            AuthenticationResponse,
             ClientSendMessage,
-            ClientReciveMessage
+            ClientReciveMessage,
+            ClientSignout,
+            ServerBroadcast,
+            ServerShutdown
         }
         #endregion
     }

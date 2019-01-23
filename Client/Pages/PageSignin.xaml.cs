@@ -18,12 +18,9 @@ using System.Windows.Shapes;
 
 namespace Client.Pages
 {
-    /// <summary>
-    /// Login.xaml 的互動邏輯
-    /// </summary>
-    public partial class PageLogin : Page
+    public partial class PageSignin : Page
     {
-        public PageLogin()
+        public PageSignin()
         {
             InitializeComponent();
         }
@@ -41,7 +38,7 @@ namespace Client.Pages
 
                 if (user == null)
                 {
-                    MessageBox.Show("登入失敗");
+                    MessageBox.Show("Can not find this user.");
                 }
                 else
                 {
@@ -50,7 +47,7 @@ namespace Client.Pages
             }
             else
             {
-                MessageBox.Show("帳號或密碼為空");
+                MessageBox.Show("Account or password is empty");
             }
         }
 

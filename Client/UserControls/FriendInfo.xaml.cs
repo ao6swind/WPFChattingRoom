@@ -16,9 +16,6 @@ using System.Windows.Shapes;
 
 namespace Client.UserControls
 {
-    /// <summary>
-    /// FriendInfo.xaml 的互動邏輯
-    /// </summary>
     public partial class FriendInfo : UserControl
     {
         private User _friend;

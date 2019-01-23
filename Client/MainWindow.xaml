@@ -6,11 +6,11 @@
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
         Icon="Resources/Images/logo.png"
-        Title="即時通訊軟體" 
+        Title="Messager" 
         Height="660" Width="300" 
         FontSize="16"
         MinHeight="660" MinWidth="300">
     <Grid>
-        <Frame Name="pnlFrame" Source="Pages/PageLogin.xaml" NavigationUIVisibility="Hidden" ></Frame>
+        <Frame Name="pnlFrame" Source="Pages/PageSignin.xaml" NavigationUIVisibility="Hidden" ></Frame>
     </Grid>
 </Window>

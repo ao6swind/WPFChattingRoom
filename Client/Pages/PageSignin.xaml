@@ -1,4 +1,4 @@
-﻿<Page x:Class="Client.Pages.PageLogin"
+﻿<Page x:Class="Client.Pages.PageSignin"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:Client.Pages"
       mc:Ignorable="d" 
       FontSize="16"
-      Title="登入頁面">
+      Title="SignInPage">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -28,16 +28,18 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Content="帳號" />
-                <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Content="密碼" />
+                <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Content="Account" />
+                <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Content="Password" />
                 <TextBox Grid.Row="0" Grid.Column="1" Margin="10,10,10,10" Name="txtAccount" />
                 <PasswordBox Grid.Row="1" Grid.Column="1" Margin="10,10,10,10" Name="txtPassword" />
-                <Button Grid.Row="2" Grid.Column="1" Margin="10,10,10,10" Content="登入" PreviewMouseLeftButtonUp="Button_PreviewMouseLeftButtonUp"/>
+                <Button Grid.Row="2" Grid.Column="1" Margin="10,10,10,10" Content="Signin" PreviewMouseLeftButtonUp="Button_PreviewMouseLeftButtonUp"/>
             </Grid>
         </StackPanel>
         <StackPanel Grid.Row="2">
             <TextBlock TextAlignment="Center" Margin="10,10,10,10">
-                還沒有帳號嗎？<Hyperlink Click="Hyperlink_Click">請點擊此處</Hyperlink>開始註冊
+                Have an account not yet?
+                <LineBreak />
+                <Hyperlink Click="Hyperlink_Click">Click here</Hyperlink> and regist one.
             </TextBlock>
             <ContentControl Name="pnlContent"/>
         </StackPanel>

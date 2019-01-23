@@ -62,17 +62,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SocketClient.cs" />
-    <Compile Include="SocketPackage.cs" />
-    <Compile Include="SocketServer.cs" />
-    <Compile Include="SocketSetting.cs" />
     <Compile Include="User.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Modules\Modules.csproj">
-      <Project>{96587D0C-558D-4E4C-94B8-FE55A136531F}</Project>
-      <Name>Modules</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.Config" />

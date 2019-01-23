@@ -18,9 +18,6 @@ using System.Windows.Shapes;
 
 namespace Client.Pages
 {
-    /// <summary>
-    /// Regist.xaml 的互動邏輯
-    /// </summary>
     public partial class PageRegist : Page
     {
         public PageRegist()
@@ -33,7 +30,7 @@ namespace Client.Pages
             ChattingRoomEntities db = new ChattingRoomEntities();
             if (db.Users.Any(x => x.Account == txtAccount.Text))
             {
-                MessageBox.Show("此帳號已存在");
+                MessageBox.Show("This account is existed.");
             }
             else
             {
@@ -44,14 +41,14 @@ namespace Client.Pages
                     Password = Auth.Hash(txtPassword.Password)
                 });
                 db.SaveChanges();
-                MessageBox.Show("註冊成功");
-                ((Frame)Application.Current.MainWindow.FindName("pnlFrame")).Navigate(new PageLogin());
+                MessageBox.Show("Regist success! Please try to login your account.");
+                ((Frame)Application.Current.MainWindow.FindName("pnlFrame")).Navigate(new PageSignin());
             }
         }
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e)
         {
-            ((Frame)Application.Current.MainWindow.FindName("pnlFrame")).Navigate(new PageLogin());
+            ((Frame)Application.Current.MainWindow.FindName("pnlFrame")).Navigate(new PageSignin());
         }
     }
 }

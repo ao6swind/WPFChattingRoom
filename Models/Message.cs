@@ -1,6 +1,6 @@
 ﻿namespace Models
 {
-    class Message
+    public class Message
     {
         public User From { get; set; }
         public User To { get; set; }
